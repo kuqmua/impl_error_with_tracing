@@ -347,10 +347,6 @@ fn generate(
                 };
             }
         } else {
-            // panic!(
-            //     "ImplErrorWithTracing - ident name {} does not contain {} or {}",
-            //     ident_as_string, WRAPPER_NAME, ORIGIN_NAME
-            // );
             quote::quote! {
                 match source_place_type {
                     #source_place_type_source_token_stream => {
