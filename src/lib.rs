@@ -65,9 +65,6 @@ fn generate(
         format!("{path}::config_mods::source_place_type::SourcePlaceType")
             .parse::<proc_macro2::TokenStream>()
             .expect("path parse failed");
-    let git_info_token_stream = format!("{path}::common::git::git_info::GitInformation")
-        .parse::<proc_macro2::TokenStream>()
-        .expect("path parse failed");
     let error_and_where_was_init = if first_source_type_ident_as_string == *"Vec" {
         let ident_as_string = match source_type_ident.path.segments[0].arguments.clone() {
             syn::PathArguments::None => {
@@ -107,7 +104,7 @@ fn generate(
                     #source_place_type_source_token_stream => {
                         let mut error_handle = source
                         .iter()
-                        .map(|e| e.get_log_where_was(source_place_type, git_info, CONFIG.is_tracing_enabled, e.get_source()))
+                        .map(|e| e.get_log_where_was(source_place_type, &where_was.git_info, CONFIG.is_tracing_enabled, e.get_source()))
                         .fold(String::from(""), |mut acc, elem| {
                             acc.push_str(&elem);
                             acc
@@ -128,7 +125,7 @@ fn generate(
                     #source_place_type_github_token_stream => {
                         let mut error_handle = source
                         .iter()
-                        .map(|e| e.get_log_where_was(source_place_type, git_info, CONFIG.is_tracing_enabled, e.get_source()))
+                        .map(|e| e.get_log_where_was(source_place_type, &where_was.git_info, CONFIG.is_tracing_enabled, e.get_source()))
                         .fold(String::from(""), |mut acc, elem| {
                             acc.push_str(&elem);
                             acc
@@ -206,7 +203,7 @@ fn generate(
                           error_handle.pop();
                           error_handle.pop();
                       }
-                      let where_was_handle = where_was.github_file_line_column(git_info);
+                      let where_was_handle = where_was.github_file_line_column(&where_was.git_info);
                       match CONFIG.is_tracing_enabled {
                           true => {
                               tracing::error!(error = format!("{} {}", where_was_handle, error_handle));
@@ -284,7 +281,7 @@ fn generate(
                     #source_place_type_source_token_stream => {
                         let mut error_handle = source
                         .iter()
-                        .map(|(key, e)| e.get_log_where_was(source_place_type, git_info, CONFIG.is_tracing_enabled, format!("{} {}", key, e.get_source())))
+                        .map(|(key, e)| e.get_log_where_was(source_place_type, &where_was.git_info, CONFIG.is_tracing_enabled, format!("{} {}", key, e.get_source())))
                         .fold(String::from(""), |mut acc, elem| {
                             acc.push_str(&elem);
                             acc
@@ -305,7 +302,7 @@ fn generate(
                     #source_place_type_github_token_stream => {
                         let mut error_handle = source
                         .iter()
-                        .map(|(key, e)| e.get_log_where_was(source_place_type, git_info, CONFIG.is_tracing_enabled, format!("{} {}", key, e.get_source())))
+                        .map(|(key, e)| e.get_log_where_was(source_place_type, &where_was.git_info, CONFIG.is_tracing_enabled, format!("{} {}", key, e.get_source())))
                         .fold(String::from(""), |mut acc, elem| {
                             acc.push_str(&elem);
                             acc
@@ -383,7 +380,7 @@ fn generate(
                             error_handle.pop();
                             error_handle.pop();
                         }
-                        let where_was_handle = where_was.github_file_line_column(git_info);
+                        let where_was_handle = where_was.github_file_line_column(&where_was.git_info);
                         match CONFIG.is_tracing_enabled {
                             true => {
                                 tracing::error!(error = format!("{} {}", where_was_handle, error_handle));
@@ -432,7 +429,7 @@ fn generate(
                         let error_handle = source.get_log_with_additional_where_was(
                             &where_was,
                             source_place_type,
-                            git_info,
+                            &where_was.git_info,
                             source.get_source(),
                             CONFIG.is_tracing_enabled
                         );
@@ -449,7 +446,7 @@ fn generate(
                         let error_handle = source.get_log_with_additional_where_was(
                             &where_was,
                             source_place_type,
-                            git_info,
+                            &where_was.git_info,
                             source.get_source(),
                             CONFIG.is_tracing_enabled
                         );
@@ -492,7 +489,7 @@ fn generate(
                     }
                     #source_place_type_github_token_stream => {
                         let error_handle = source.get_source();
-                        let where_was_handle = where_was.github_file_line_column(git_info);
+                        let where_was_handle = where_was.github_file_line_column(&where_was.git_info);
                         match CONFIG.is_tracing_enabled {
                             true => {
                                 tracing::error!(error = format!("{} {}", where_was_handle, error_handle));
@@ -536,7 +533,7 @@ fn generate(
                     }
                 }
                 #source_place_type_github_token_stream => {
-                    let error_handle = format!("{} {}", where_was.github_file_line_column(git_info), source);
+                    let error_handle = format!("{} {}", where_was.github_file_line_column(&where_was.git_info), source);
                     match CONFIG.is_tracing_enabled {
                         true => {
                             tracing::error!(error = error_handle);
@@ -567,7 +564,6 @@ fn generate(
                 source: #source_type_ident,
                 where_was: #where_was_token_stream,
                 source_place_type: &#source_place_type_token_stream,
-                git_info: &#git_info_token_stream,
             ) -> Self {
                 #error_and_where_was_init
                 Self { source, where_was }
