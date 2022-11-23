@@ -104,7 +104,7 @@ fn generate(
                     #source_place_type_source_token_stream => {
                         let mut error_handle = source
                         .iter()
-                        .map(|e| e.get_log_where_was(source_place_type, &where_was.git_info, CONFIG.is_tracing_enabled, e.get_source()))
+                        .map(|e| e.get_log_where_was(source_place_type, CONFIG.is_tracing_enabled, e.get_source()))
                         .fold(String::from(""), |mut acc, elem| {
                             acc.push_str(&elem);
                             acc
@@ -125,7 +125,7 @@ fn generate(
                     #source_place_type_github_token_stream => {
                         let mut error_handle = source
                         .iter()
-                        .map(|e| e.get_log_where_was(source_place_type, &where_was.git_info, CONFIG.is_tracing_enabled, e.get_source()))
+                        .map(|e| e.get_log_where_was(source_place_type, CONFIG.is_tracing_enabled, e.get_source()))
                         .fold(String::from(""), |mut acc, elem| {
                             acc.push_str(&elem);
                             acc
@@ -281,7 +281,7 @@ fn generate(
                     #source_place_type_source_token_stream => {
                         let mut error_handle = source
                         .iter()
-                        .map(|(key, e)| e.get_log_where_was(source_place_type, &where_was.git_info, CONFIG.is_tracing_enabled, format!("{} {}", key, e.get_source())))
+                        .map(|(key, e)| e.get_log_where_was(source_place_type, CONFIG.is_tracing_enabled, format!("{} {}", key, e.get_source())))
                         .fold(String::from(""), |mut acc, elem| {
                             acc.push_str(&elem);
                             acc
@@ -302,7 +302,7 @@ fn generate(
                     #source_place_type_github_token_stream => {
                         let mut error_handle = source
                         .iter()
-                        .map(|(key, e)| e.get_log_where_was(source_place_type, &where_was.git_info, CONFIG.is_tracing_enabled, format!("{} {}", key, e.get_source())))
+                        .map(|(key, e)| e.get_log_where_was(source_place_type, CONFIG.is_tracing_enabled, format!("{} {}", key, e.get_source())))
                         .fold(String::from(""), |mut acc, elem| {
                             acc.push_str(&elem);
                             acc
@@ -429,7 +429,6 @@ fn generate(
                         let error_handle = source.get_log_with_additional_where_was(
                             &where_was,
                             source_place_type,
-                            &where_was.git_info,
                             source.get_source(),
                             CONFIG.is_tracing_enabled
                         );
@@ -446,7 +445,6 @@ fn generate(
                         let error_handle = source.get_log_with_additional_where_was(
                             &where_was,
                             source_place_type,
-                            &where_was.git_info,
                             source.get_source(),
                             CONFIG.is_tracing_enabled
                         );
