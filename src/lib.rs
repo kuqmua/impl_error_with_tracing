@@ -73,6 +73,15 @@ fn generate(
         format!("{path}::config_mods::source_place_type::SourcePlaceType")
             .parse::<proc_macro2::TokenStream>()
             .expect("path parse failed");
+    let tracing_token_stream = format!("{path}::config_mods::log_type::LogType::Tracing")
+        .parse::<proc_macro2::TokenStream>()
+        .expect("path parse failed");
+    let stack_token_stream = format!("{path}::config_mods::log_type::LogType::Stack")
+        .parse::<proc_macro2::TokenStream>()
+        .expect("path parse failed");
+    let none_token_stream = format!("{path}::config_mods::log_type::LogType::None")
+        .parse::<proc_macro2::TokenStream>()
+        .expect("path parse failed");
     let error_and_where_was_init = if first_source_type_ident_as_string == *"Vec" {
         let ident_as_string = match source_type_ident.path.segments[0].arguments.clone() {
             syn::PathArguments::None => {
@@ -112,7 +121,7 @@ fn generate(
                     #source_place_type_source_token_stream => {
                         let mut error_handle = source
                         .iter()
-                        .map(|e| e.get_log_where_was(source_place_type, CONFIG.is_tracing_enabled, e.get_source()))
+                        .map(|e| e.get_log_where_was(source_place_type, CONFIG.log_type, e.get_source()))
                         .fold(String::from(""), |mut acc, elem| {
                             acc.push_str(&elem);
                             acc
@@ -121,19 +130,20 @@ fn generate(
                             error_handle.pop();
                             error_handle.pop();
                         }
-                        match CONFIG.is_tracing_enabled {
-                            true => {
+                        match CONFIG.log_type {
+                            #tracing_token_stream => {
                                 tracing::error!(error = error_handle);
                             }
-                            false => {
+                            #stack_token_stream => {
                                 println!("{}", RGB(CONFIG.error_red, CONFIG.error_green, CONFIG.error_blue).bold().paint(error_handle));
                             }
+                            #none_token_stream => (),
                         }
                     }
                     #source_place_type_github_token_stream => {
                         let mut error_handle = source
                         .iter()
-                        .map(|e| e.get_log_where_was(source_place_type, CONFIG.is_tracing_enabled, e.get_source()))
+                        .map(|e| e.get_log_where_was(source_place_type, CONFIG.log_type, e.get_source()))
                         .fold(String::from(""), |mut acc, elem| {
                             acc.push_str(&elem);
                             acc
@@ -142,13 +152,14 @@ fn generate(
                             error_handle.pop();
                             error_handle.pop();
                         }
-                        match CONFIG.is_tracing_enabled {
-                            true => {
+                        match CONFIG.log_type {
+                            #tracing_token_stream => {
                                 tracing::error!(error = error_handle);
                             }
-                            false => {
+                            #stack_token_stream => {
                                 println!("{}", RGB(CONFIG.error_red, CONFIG.error_green, CONFIG.error_blue).bold().paint(error_handle));
                             }
+                            #none_token_stream => (),
                         }
                     }
                     #source_place_type_none_token_stream => {
@@ -163,13 +174,14 @@ fn generate(
                             error_handle.pop();
                             error_handle.pop();
                         }
-                        match CONFIG.is_tracing_enabled {
-                            true => {
+                        match CONFIG.log_type {
+                            #tracing_token_stream => {
                                 tracing::error!(error = error_handle);
                             }
-                            false => {
+                            #stack_token_stream => {
                                 println!("{}", RGB(CONFIG.error_red, CONFIG.error_green, CONFIG.error_blue).bold().paint(error_handle));
                             }
+                            #none_token_stream => (),
                         }
                     }
                 };
@@ -190,13 +202,14 @@ fn generate(
                           error_handle.pop();
                       }
                       let where_was_handle = where_was.file_line_column();
-                      match CONFIG.is_tracing_enabled {
-                          true => {
-                              tracing::error!(error = format!("{} {}", where_was_handle, error_handle));
+                      match CONFIG.log_type {
+                          #tracing_token_stream => {
+                              tracing::error!(error = error_handle);
                           }
-                          false => {
-                              println!("{}", RGB(CONFIG.error_red, CONFIG.error_green, CONFIG.error_blue).bold().paint(format!("{} {}", where_was_handle, error_handle)));
+                          #stack_token_stream => {
+                              println!("{}", RGB(CONFIG.error_red, CONFIG.error_green, CONFIG.error_blue).bold().paint(error_handle));
                           }
+                          #none_token_stream => (),
                       }
                   }
                   #source_place_type_github_token_stream => {
@@ -212,13 +225,14 @@ fn generate(
                           error_handle.pop();
                       }
                       let where_was_handle = where_was.github_file_line_column(&where_was.git_info);
-                      match CONFIG.is_tracing_enabled {
-                          true => {
-                              tracing::error!(error = format!("{} {}", where_was_handle, error_handle));
+                      match CONFIG.log_type {
+                          #tracing_token_stream => {
+                              tracing::error!(error = error_handle);
                           }
-                          false => {
-                              println!("{}", RGB(CONFIG.error_red, CONFIG.error_green, CONFIG.error_blue).bold().paint(format!("{} {}", where_was_handle, error_handle)));
+                          #stack_token_stream => {
+                              println!("{}", RGB(CONFIG.error_red, CONFIG.error_green, CONFIG.error_blue).bold().paint(error_handle));
                           }
+                          #none_token_stream => (),
                       }
                   }
                   #source_place_type_none_token_stream => {
@@ -233,13 +247,14 @@ fn generate(
                           error_handle.pop();
                           error_handle.pop();
                       }
-                      match CONFIG.is_tracing_enabled {
-                          true => {
+                      match CONFIG.log_type {
+                          #tracing_token_stream => {
                               tracing::error!(error = error_handle);
                           }
-                          false => {
+                          #stack_token_stream => {
                               println!("{}", RGB(CONFIG.error_red, CONFIG.error_green, CONFIG.error_blue).bold().paint(error_handle));
                           }
+                          #none_token_stream => (),
                       }
                   }
               };
@@ -289,7 +304,7 @@ fn generate(
                     #source_place_type_source_token_stream => {
                         let mut error_handle = source
                         .iter()
-                        .map(|(key, e)| e.get_log_where_was(source_place_type, CONFIG.is_tracing_enabled, format!("{} {}", key, e.get_source())))
+                        .map(|(key, e)| e.get_log_where_was(source_place_type, CONFIG.log_type, format!("{} {}", key, e.get_source())))
                         .fold(String::from(""), |mut acc, elem| {
                             acc.push_str(&elem);
                             acc
@@ -298,19 +313,20 @@ fn generate(
                             error_handle.pop();
                             error_handle.pop();
                         }
-                        match CONFIG.is_tracing_enabled {
-                            true => {
+                        match CONFIG.log_type {
+                            #tracing_token_stream => {
                                 tracing::error!(error = error_handle);
                             }
-                            false => {
+                            #stack_token_stream => {
                                 println!("{}", RGB(CONFIG.error_red, CONFIG.error_green, CONFIG.error_blue).bold().paint(error_handle));
                             }
+                            #none_token_stream => (),
                         }
                     }
                     #source_place_type_github_token_stream => {
                         let mut error_handle = source
                         .iter()
-                        .map(|(key, e)| e.get_log_where_was(source_place_type, CONFIG.is_tracing_enabled, format!("{} {}", key, e.get_source())))
+                        .map(|(key, e)| e.get_log_where_was(source_place_type, CONFIG.log_type, format!("{} {}", key, e.get_source())))
                         .fold(String::from(""), |mut acc, elem| {
                             acc.push_str(&elem);
                             acc
@@ -319,13 +335,14 @@ fn generate(
                             error_handle.pop();
                             error_handle.pop();
                         }
-                        match CONFIG.is_tracing_enabled {
-                            true => {
+                        match CONFIG.log_type {
+                            #tracing_token_stream => {
                                 tracing::error!(error = error_handle);
                             }
-                            false => {
+                            #stack_token_stream => {
                                 println!("{}", RGB(CONFIG.error_red, CONFIG.error_green, CONFIG.error_blue).bold().paint(error_handle));
                             }
+                            #none_token_stream => (),
                         }
                     }
                     #source_place_type_none_token_stream => {
@@ -340,13 +357,14 @@ fn generate(
                             error_handle.pop();
                             error_handle.pop();
                         }
-                        match CONFIG.is_tracing_enabled {
-                            true => {
+                        match CONFIG.log_type {
+                            #tracing_token_stream => {
                                 tracing::error!(error = error_handle);
                             }
-                            false => {
+                            #stack_token_stream => {
                                 println!("{}", RGB(CONFIG.error_red, CONFIG.error_green, CONFIG.error_blue).bold().paint(error_handle));
                             }
+                            #none_token_stream => (),
                         }
                     }
                 };
@@ -367,13 +385,14 @@ fn generate(
                             error_handle.pop();
                         }
                         let where_was_handle = where_was.file_line_column();
-                        match CONFIG.is_tracing_enabled {
-                            true => {
-                                tracing::error!(error = format!("{} {}", where_was_handle, error_handle));
+                        match CONFIG.log_type {
+                            #tracing_token_stream => {
+                                tracing::error!(error = error_handle);
                             }
-                            false => {
-                                println!("{}", RGB(CONFIG.error_red, CONFIG.error_green, CONFIG.error_blue).bold().paint(format!("{} {}", where_was_handle, error_handle)));
+                            #stack_token_stream => {
+                                println!("{}", RGB(CONFIG.error_red, CONFIG.error_green, CONFIG.error_blue).bold().paint(error_handle));
                             }
+                            #none_token_stream => (),
                         }
                     }
                     #source_place_type_github_token_stream => {
@@ -389,13 +408,14 @@ fn generate(
                             error_handle.pop();
                         }
                         let where_was_handle = where_was.github_file_line_column(&where_was.git_info);
-                        match CONFIG.is_tracing_enabled {
-                            true => {
-                                tracing::error!(error = format!("{} {}", where_was_handle, error_handle));
+                        match CONFIG.log_type {
+                            #tracing_token_stream => {
+                                tracing::error!(error = error_handle);
                             }
-                            false => {
-                                println!("{}", RGB(CONFIG.error_red, CONFIG.error_green, CONFIG.error_blue).bold().paint(format!("{} {}", where_was_handle, error_handle)));
+                            #stack_token_stream => {
+                                println!("{}", RGB(CONFIG.error_red, CONFIG.error_green, CONFIG.error_blue).bold().paint(error_handle));
                             }
+                            #none_token_stream => (),
                         }
                     }
                     #source_place_type_none_token_stream => {
@@ -410,13 +430,14 @@ fn generate(
                             error_handle.pop();
                             error_handle.pop();
                         }
-                        match CONFIG.is_tracing_enabled {
-                            true => {
+                        match CONFIG.log_type {
+                            #tracing_token_stream => {
                                 tracing::error!(error = error_handle);
                             }
-                            false => {
+                            #stack_token_stream => {
                                 println!("{}", RGB(CONFIG.error_red, CONFIG.error_green, CONFIG.error_blue).bold().paint(error_handle));
                             }
+                            #none_token_stream => (),
                         }
                     }
                 };
@@ -438,15 +459,16 @@ fn generate(
                             &where_was,
                             source_place_type,
                             source.get_source(),
-                            CONFIG.is_tracing_enabled
+                            CONFIG.log_type
                         );
-                        match CONFIG.is_tracing_enabled {
-                            true => {
+                        match CONFIG.log_type {
+                            #tracing_token_stream => {
                                 tracing::error!(error = error_handle);
                             }
-                            false => {
+                            #stack_token_stream => {
                                 println!("{}", RGB(CONFIG.error_red, CONFIG.error_green, CONFIG.error_blue).bold().paint(error_handle));
                             }
+                            #none_token_stream => (),
                         }
                     }
                     #source_place_type_github_token_stream => {
@@ -454,26 +476,28 @@ fn generate(
                             &where_was,
                             source_place_type,
                             source.get_source(),
-                            CONFIG.is_tracing_enabled
+                            CONFIG.log_type
                         );
-                        match CONFIG.is_tracing_enabled {
-                            true => {
+                        match CONFIG.log_type {
+                            #tracing_token_stream => {
                                 tracing::error!(error = error_handle);
                             }
-                            false => {
+                            #stack_token_stream => {
                                 println!("{}", RGB(CONFIG.error_red, CONFIG.error_green, CONFIG.error_blue).bold().paint(error_handle));
                             }
+                            #none_token_stream => (),
                         }
                     }
                     #source_place_type_none_token_stream => {
                         let error_handle = source.get_source();
-                        match CONFIG.is_tracing_enabled {
-                            true => {
+                        match CONFIG.log_type {
+                            #tracing_token_stream => {
                                 tracing::error!(error = error_handle);
                             }
-                            false => {
+                            #stack_token_stream => {
                                 println!("{}", RGB(CONFIG.error_red, CONFIG.error_green, CONFIG.error_blue).bold().paint(error_handle));
                             }
+                            #none_token_stream => (),
                         }
                     }
                 };
@@ -484,36 +508,39 @@ fn generate(
                     #source_place_type_source_token_stream => {
                         let error_handle = source.get_source();
                         let where_was_handle = where_was.file_line_column();
-                        match CONFIG.is_tracing_enabled {
-                            true => {
-                                tracing::error!(error = format!("{} {}", where_was_handle, error_handle));
+                        match CONFIG.log_type {
+                            #tracing_token_stream => {
+                                tracing::error!(error = error_handle);
                             }
-                            false => {
-                                println!("{}", RGB(CONFIG.error_red, CONFIG.error_green, CONFIG.error_blue).bold().paint(format!("{} {}", where_was_handle, error_handle)));
+                            #stack_token_stream => {
+                                println!("{}", RGB(CONFIG.error_red, CONFIG.error_green, CONFIG.error_blue).bold().paint(error_handle));
                             }
+                            #none_token_stream => (),
                         }
                     }
                     #source_place_type_github_token_stream => {
                         let error_handle = source.get_source();
                         let where_was_handle = where_was.github_file_line_column(&where_was.git_info);
-                        match CONFIG.is_tracing_enabled {
-                            true => {
-                                tracing::error!(error = format!("{} {}", where_was_handle, error_handle));
+                        match CONFIG.log_type {
+                            #tracing_token_stream => {
+                                tracing::error!(error = error_handle);
                             }
-                            false => {
-                                println!("{}", RGB(CONFIG.error_red, CONFIG.error_green, CONFIG.error_blue).bold().paint(format!("{} {}", where_was_handle, error_handle)));
+                            #stack_token_stream => {
+                                println!("{}", RGB(CONFIG.error_red, CONFIG.error_green, CONFIG.error_blue).bold().paint(error_handle));
                             }
+                            #none_token_stream => (),
                         }
                     }
                     #source_place_type_none_token_stream => {
                         let error_handle = source.get_source();
-                        match CONFIG.is_tracing_enabled {
-                            true => {
+                        match CONFIG.log_type {
+                            #tracing_token_stream => {
                                 tracing::error!(error = error_handle);
                             }
-                            false => {
+                            #stack_token_stream => {
                                 println!("{}", RGB(CONFIG.error_red, CONFIG.error_green, CONFIG.error_blue).bold().paint(error_handle));
                             }
+                            #none_token_stream => (),
                         }
                     }
                 }
@@ -529,35 +556,38 @@ fn generate(
             match source_place_type {
                 #source_place_type_source_token_stream => {
                     let error_handle = format!("{} {}", where_was.file_line_column(), source);
-                    match CONFIG.is_tracing_enabled {
-                        true => {
+                    match CONFIG.log_type {
+                        #tracing_token_stream => {
                             tracing::error!(error = error_handle);
                         }
-                        false => {
+                        #stack_token_stream => {
                             println!("{}", RGB(CONFIG.error_red, CONFIG.error_green, CONFIG.error_blue).bold().paint(error_handle));
                         }
+                        #none_token_stream => (),
                     }
                 }
                 #source_place_type_github_token_stream => {
                     let error_handle = format!("{} {}", where_was.github_file_line_column(&where_was.git_info), source);
-                    match CONFIG.is_tracing_enabled {
-                        true => {
+                    match CONFIG.log_type {
+                        #tracing_token_stream => {
                             tracing::error!(error = error_handle);
                         }
-                        false => {
+                        #stack_token_stream => {
                             println!("{}", RGB(CONFIG.error_red, CONFIG.error_green, CONFIG.error_blue).bold().paint(error_handle));
                         }
+                        #none_token_stream => (),
                     }
                 }
                 #source_place_type_none_token_stream => {
                     let error_handle = format!("{}", source);
-                    match CONFIG.is_tracing_enabled {
-                        true => {
+                    match CONFIG.log_type {
+                        #tracing_token_stream => {
                             tracing::error!(error = error_handle);
                         }
-                        false => {
+                        #stack_token_stream => {
                             println!("{}", RGB(CONFIG.error_red, CONFIG.error_green, CONFIG.error_blue).bold().paint(error_handle));
                         }
+                        #none_token_stream => (),
                     }
                 }
             }
