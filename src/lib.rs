@@ -82,6 +82,9 @@ fn generate(
     let none_token_stream = format!("{path}::config_mods::log_type::LogType::None")
         .parse::<proc_macro2::TokenStream>()
         .expect("path parse failed");
+    let error_color_token_stream = format!("{path}::traits::get_color::ErrorColorBold")
+        .parse::<proc_macro2::TokenStream>()
+        .expect("path parse failed");
     let error_and_where_was_init = if first_source_type_ident_as_string == *"Vec" {
         let ident_as_string = match source_type_ident.path.segments[0].arguments.clone() {
             syn::PathArguments::None => {
@@ -117,6 +120,7 @@ fn generate(
             );
         } else if ident_as_string.contains(WRAPPER_NAME) {
             quote::quote! {
+                use #error_color_token_stream;
                 match source_place_type {
                     #source_place_type_source_token_stream => {
                         let mut error_handle = source
@@ -135,7 +139,7 @@ fn generate(
                                 tracing::error!(error = error_handle);
                             }
                             #stack_token_stream => {
-                                println!("{}", RGB(CONFIG.error_red, CONFIG.error_green, CONFIG.error_blue).bold().paint(error_handle));
+                                println!("{}", CONFIG.get_error_color_bold().paint(error_handle));
                             }
                             #none_token_stream => (),
                         }
@@ -157,7 +161,7 @@ fn generate(
                                 tracing::error!(error = error_handle);
                             }
                             #stack_token_stream => {
-                                println!("{}", RGB(CONFIG.error_red, CONFIG.error_green, CONFIG.error_blue).bold().paint(error_handle));
+                                println!("{}", CONFIG.get_error_color_bold().paint(error_handle));
                             }
                             #none_token_stream => (),
                         }
@@ -179,7 +183,7 @@ fn generate(
                                 tracing::error!(error = error_handle);
                             }
                             #stack_token_stream => {
-                                println!("{}", RGB(CONFIG.error_red, CONFIG.error_green, CONFIG.error_blue).bold().paint(error_handle));
+                                println!("{}", CONFIG.get_error_color_bold().paint(error_handle));
                             }
                             #none_token_stream => (),
                         }
@@ -188,6 +192,7 @@ fn generate(
             }
         } else if ident_as_string.contains(ORIGIN_NAME) {
             quote::quote! {
+              use #error_color_token_stream;
               match source_place_type {
                   #source_place_type_source_token_stream => {
                       let mut error_handle = source
@@ -207,7 +212,7 @@ fn generate(
                               tracing::error!(error = error_handle);
                           }
                           #stack_token_stream => {
-                              println!("{}", RGB(CONFIG.error_red, CONFIG.error_green, CONFIG.error_blue).bold().paint(error_handle));
+                              println!("{}", CONFIG.get_error_color_bold().paint(error_handle));
                           }
                           #none_token_stream => (),
                       }
@@ -230,7 +235,7 @@ fn generate(
                               tracing::error!(error = error_handle);
                           }
                           #stack_token_stream => {
-                              println!("{}", RGB(CONFIG.error_red, CONFIG.error_green, CONFIG.error_blue).bold().paint(error_handle));
+                              println!("{}", CONFIG.get_error_color_bold().paint(error_handle));
                           }
                           #none_token_stream => (),
                       }
@@ -252,7 +257,7 @@ fn generate(
                               tracing::error!(error = error_handle);
                           }
                           #stack_token_stream => {
-                              println!("{}", RGB(CONFIG.error_red, CONFIG.error_green, CONFIG.error_blue).bold().paint(error_handle));
+                              println!("{}", CONFIG.get_error_color_bold().paint(error_handle));
                           }
                           #none_token_stream => (),
                       }
@@ -300,6 +305,7 @@ fn generate(
             );
         } else if ident_as_string.contains(WRAPPER_NAME) || ident_as_string.contains(ORIGIN_NAME) {
             quote::quote! {
+                use #error_color_token_stream;
                 match source_place_type {
                     #source_place_type_source_token_stream => {
                         let mut error_handle = source
@@ -318,7 +324,7 @@ fn generate(
                                 tracing::error!(error = error_handle);
                             }
                             #stack_token_stream => {
-                                println!("{}", RGB(CONFIG.error_red, CONFIG.error_green, CONFIG.error_blue).bold().paint(error_handle));
+                                println!("{}", CONFIG.get_error_color_bold().paint(error_handle));
                             }
                             #none_token_stream => (),
                         }
@@ -340,7 +346,7 @@ fn generate(
                                 tracing::error!(error = error_handle);
                             }
                             #stack_token_stream => {
-                                println!("{}", RGB(CONFIG.error_red, CONFIG.error_green, CONFIG.error_blue).bold().paint(error_handle));
+                                println!("{}", CONFIG.get_error_color_bold().paint(error_handle));
                             }
                             #none_token_stream => (),
                         }
@@ -362,7 +368,7 @@ fn generate(
                                 tracing::error!(error = error_handle);
                             }
                             #stack_token_stream => {
-                                println!("{}", RGB(CONFIG.error_red, CONFIG.error_green, CONFIG.error_blue).bold().paint(error_handle));
+                                println!("{}", CONFIG.get_error_color_bold().paint(error_handle));
                             }
                             #none_token_stream => (),
                         }
@@ -371,6 +377,7 @@ fn generate(
             }
         } else {
             quote::quote! {
+                use #error_color_token_stream;
                 match source_place_type {
                     #source_place_type_source_token_stream => {
                         let mut error_handle = source
@@ -390,7 +397,7 @@ fn generate(
                                 tracing::error!(error = error_handle);
                             }
                             #stack_token_stream => {
-                                println!("{}", RGB(CONFIG.error_red, CONFIG.error_green, CONFIG.error_blue).bold().paint(error_handle));
+                                println!("{}", CONFIG.get_error_color_bold().paint(error_handle));
                             }
                             #none_token_stream => (),
                         }
@@ -413,7 +420,7 @@ fn generate(
                                 tracing::error!(error = error_handle);
                             }
                             #stack_token_stream => {
-                                println!("{}", RGB(CONFIG.error_red, CONFIG.error_green, CONFIG.error_blue).bold().paint(error_handle));
+                                println!("{}", CONFIG.get_error_color_bold().paint(error_handle));
                             }
                             #none_token_stream => (),
                         }
@@ -435,7 +442,7 @@ fn generate(
                                 tracing::error!(error = error_handle);
                             }
                             #stack_token_stream => {
-                                println!("{}", RGB(CONFIG.error_red, CONFIG.error_green, CONFIG.error_blue).bold().paint(error_handle));
+                                println!("{}", CONFIG.get_error_color_bold().paint(error_handle));
                             }
                             #none_token_stream => (),
                         }
@@ -453,6 +460,7 @@ fn generate(
             );
         } else if first_source_type_ident_as_string.contains(WRAPPER_NAME) {
             quote::quote! {
+                use #error_color_token_stream;
                 match source_place_type {
                     #source_place_type_source_token_stream => {
                         let error_handle = source.get_log_with_additional_where_was(
@@ -466,7 +474,7 @@ fn generate(
                                 tracing::error!(error = error_handle);
                             }
                             #stack_token_stream => {
-                                println!("{}", RGB(CONFIG.error_red, CONFIG.error_green, CONFIG.error_blue).bold().paint(error_handle));
+                                println!("{}", CONFIG.get_error_color_bold().paint(error_handle));
                             }
                             #none_token_stream => (),
                         }
@@ -483,7 +491,7 @@ fn generate(
                                 tracing::error!(error = error_handle);
                             }
                             #stack_token_stream => {
-                                println!("{}", RGB(CONFIG.error_red, CONFIG.error_green, CONFIG.error_blue).bold().paint(error_handle));
+                                println!("{}", CONFIG.get_error_color_bold().paint(error_handle));
                             }
                             #none_token_stream => (),
                         }
@@ -495,7 +503,7 @@ fn generate(
                                 tracing::error!(error = error_handle);
                             }
                             #stack_token_stream => {
-                                println!("{}", RGB(CONFIG.error_red, CONFIG.error_green, CONFIG.error_blue).bold().paint(error_handle));
+                                println!("{}", CONFIG.get_error_color_bold().paint(error_handle));
                             }
                             #none_token_stream => (),
                         }
@@ -504,6 +512,7 @@ fn generate(
             }
         } else if first_source_type_ident_as_string.contains(ORIGIN_NAME) {
             quote::quote! {
+                use #error_color_token_stream;
                 match source_place_type {
                     #source_place_type_source_token_stream => {
                         let error_handle = source.get_source();
@@ -513,7 +522,7 @@ fn generate(
                                 tracing::error!(error = error_handle);
                             }
                             #stack_token_stream => {
-                                println!("{}", RGB(CONFIG.error_red, CONFIG.error_green, CONFIG.error_blue).bold().paint(error_handle));
+                                println!("{}", CONFIG.get_error_color_bold().paint(error_handle));
                             }
                             #none_token_stream => (),
                         }
@@ -526,7 +535,7 @@ fn generate(
                                 tracing::error!(error = error_handle);
                             }
                             #stack_token_stream => {
-                                println!("{}", RGB(CONFIG.error_red, CONFIG.error_green, CONFIG.error_blue).bold().paint(error_handle));
+                                println!("{}", CONFIG.get_error_color_bold().paint(error_handle));
                             }
                             #none_token_stream => (),
                         }
@@ -538,7 +547,7 @@ fn generate(
                                 tracing::error!(error = error_handle);
                             }
                             #stack_token_stream => {
-                                println!("{}", RGB(CONFIG.error_red, CONFIG.error_green, CONFIG.error_blue).bold().paint(error_handle));
+                                println!("{}", CONFIG.get_error_color_bold().paint(error_handle));
                             }
                             #none_token_stream => (),
                         }
@@ -553,6 +562,7 @@ fn generate(
         }
     } else {
         quote::quote! {
+            use #error_color_token_stream;
             match source_place_type {
                 #source_place_type_source_token_stream => {
                     let error_handle = format!("{} {}", where_was.file_line_column(), source);
@@ -561,7 +571,7 @@ fn generate(
                             tracing::error!(error = error_handle);
                         }
                         #stack_token_stream => {
-                            println!("{}", RGB(CONFIG.error_red, CONFIG.error_green, CONFIG.error_blue).bold().paint(error_handle));
+                            println!("{}", CONFIG.get_error_color_bold().paint(error_handle));
                         }
                         #none_token_stream => (),
                     }
@@ -573,7 +583,7 @@ fn generate(
                             tracing::error!(error = error_handle);
                         }
                         #stack_token_stream => {
-                            println!("{}", RGB(CONFIG.error_red, CONFIG.error_green, CONFIG.error_blue).bold().paint(error_handle));
+                            println!("{}", CONFIG.get_error_color_bold().paint(error_handle));
                         }
                         #none_token_stream => (),
                     }
@@ -585,7 +595,7 @@ fn generate(
                             tracing::error!(error = error_handle);
                         }
                         #stack_token_stream => {
-                            println!("{}", RGB(CONFIG.error_red, CONFIG.error_green, CONFIG.error_blue).bold().paint(error_handle));
+                            println!("{}", CONFIG.get_error_color_bold().paint(error_handle));
                         }
                         #none_token_stream => (),
                     }
