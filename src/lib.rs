@@ -512,7 +512,6 @@ fn generate(
             }
         } else if first_source_type_ident_as_string.contains(ORIGIN_NAME) {
             quote::quote! {
-
                 match source_place_type {
                     #source_place_type_source_token_stream => {
                         let error_handle = source.get_source();
